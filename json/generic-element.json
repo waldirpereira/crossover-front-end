@@ -1,0 +1,21 @@
+﻿{
+  "metrics": {
+    "test": 0.64,
+    "maintainability": 0.53,
+    "security": 0.64,
+    "workmanship": 0.72
+  },
+  "build": {
+    "time": "2014-17-04T10:46"
+  },
+  "unitTest": {
+    "passed": 142,
+    "notPassed": 10,
+    "coverage": 0.67
+  },
+  "functionalTest": {
+    "passed": 4321,
+    "notPassed": 2145,
+    "coverage": 0.23
+  }
+}
