@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html ng-app="cong.test">
+<head>
+    <meta charset="utf-8">
+    <title>Jasmine Spec Runner v2.5.2</title>
+
+    <link rel="shortcut icon" type="image/png" href="test/lib/jasmine-2.5.2/jasmine_favicon.png">
+
+    <link rel="stylesheet" href="test/lib/jasmine-2.5.2/jasmine.css">
+    <script src="test/lib/jasmine-2.5.2/jasmine.js"></script>
+    <script src="test/lib/jasmine-2.5.2/jasmine-html.js"></script>
+    <script src="test/lib/jasmine-2.5.2/boot.js"></script>
+
+    <script src="js/vendor/all.min.js"></script>
+    <script src="js/app/app.min.js"></script>
+    <script src="js/app/element.min.js"></script>
+    <script src="js/vendor/angular-mocks.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/vendor/vendor.min.css">
+    <link rel="stylesheet" type="text/css" href="css/app/app.min.css">
+
+    <script src="test/scripts/cong-test-result.js"></script>
+
+    <script src="test/spec/ElementControllerSpec.js"></script>
+
+</head>
+<body>
+    <div class="main-container">
+        <cong-menu></cong-menu>
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">Test results</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-12" id="aaa">
+                        <cong-test-results />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        (function () {
+            angular.module("cong")
+                .constant("ROUTES", {
+                    menuTemplate: "tpt/menu.html"
+                });
+        })();
+
+    </script>
+</body>
+</html>

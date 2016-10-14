@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html ng-app="cong.element">
+<head>
+    <title>Elements</title>
+    <meta charset="utf-8" />
+    <script src="js/vendor/all.min.js"></script>
+    <script src="js/app/app.min.js"></script>
+    <script src="js/app/element.min.js"></script>
+    <script src="js/app/readme.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/vendor/vendor.min.css">
+    <link rel="stylesheet" type="text/css" href="css/app/app.min.css">
+</head>
+<body>
+    <div class="main-container">
+        <cong-menu></cong-menu>
+        <div ng-view ng-cloak></div>
+    </div>
+
+    <script type="text/ng-template" id="list.html">
+        <div class="animate-show-only">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Elements</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="element-table">
+                                <div class="element-table-header" style="width: auto; min-width: 180px;">Changelist / Build</div>
+
+                                <div class="element-table-header" style="width: 110px;">Functional Test</div>
+                                <div class="element-table-header" style="width: 100px;">Unit Test</div>
+                                <div class="element-table-header" style="width: 80px;">Build</div>
+                                <div class="element-table-header" style="width: 80px;">Metrics</div>
+                                <div class="element-table-header" style="width: 80px; text-align: center;">State</div>
+                                <div class="element-table-header" style="width: 140px; text-align: center;">Time Started</div>
+                                <div class="element-table-header" style="width: 60px;">Owner</div>
+                            </div>
+
+                            <div ng-repeat="e in ctrl.elementsList track by e.id"
+                                 class="element-row {{ e.state | lowercase }}"
+                                 ng-class="{'selected' : e.id === ctrl.elementSelected.id }"
+                                 ng-click="ctrl.open(e.id);">
+                                <div class="element-cell" style="width: auto; min-width: 180px;">
+                                    <img ng-src="{{'img/element/' + (e.type.name + '-' + e.state | lowercase) + '.png'}}" />
+                                    {{e.id}}
+                                </div>
+                                <div class="element-cell" style="width: 60px;">{{e.owner}}</div>
+                                <div class="element-cell" style="width: 140px; text-align: center;">{{e.timeStarted | date : 'M/d/yyyy h:mm a' | lowercase }}</div>
+                                <div class="element-cell" style="width: 80px; text-align: right;">{{e.state}}</div>
+                                <div class="element-cell" style="width: 80px;"><progressbox ng-if="ctrl.elementSelected.id !== e.id" status="e.metrics" state="e.state"></progressbox></div>
+                                <div class="element-cell" style="width: 80px;"><progressbox ng-if="ctrl.elementSelected.id !== e.id" status="e.build" state="e.state"></progressbox></div>
+                                <div class="element-cell" style="width: 100px;"><progressbox ng-if="ctrl.elementSelected.id !== e.id" status="e.unitTest" state="e.state"></progressbox></div>
+                                <div class="element-cell" style="width: 110px;"><progressbox ng-if="ctrl.elementSelected.id !== e.id" status="e.functionalTest" state="e.state"></progressbox></div>
+                                <div ng-if="ctrl.elementSelected.id === e.id">
+                                    <div class="loader-container"
+                                         ng-if="ctrl.status.loadingElement">
+                                        <div class="loader"></div>
+                                    </div>
+                                    <div ng-if="!ctrl.status.loadingElement">
+                                        <detailbox success="e.state !== 'Rejected'"
+                                                   ng-click="ctrl.openDetailsModalForSelectedElement('metrics');">
+                                            <boxtitle>Metrics</boxtitle>
+                                            <div class="metric-item">
+                                                <div class="metric-arrow" style="background: url('img/element/arrow-green.png');"></div>
+                                                <div class="metric-value">{{ctrl.elementSelected.details.metrics.test*100}}</div>
+                                                <div class="metric-label">Test</div>
+                                            </div>
+
+                                            <div class="metric-item">
+                                                <div class="metric-arrow" style="background: url('img/element/arrow-{{ctrl.elementSelected.state === 'Rejected' ? 'red' : 'green'}}.png');"
+                                                     ng-class="{'rotate180': ctrl.elementSelected.state === 'Rejected'}"></div>
+                                                <div class="metric-value">{{ctrl.elementSelected.details.metrics.maintainability*100}}</div>
+                                                <div class="metric-label">Maintainability</div>
+                                            </div>
+
+                                            <div class="metric-item">
+                                                <div class="metric-arrow rotate90" style="background: url('img/element/arrow-yellow.png');"></div>
+                                                <div class="metric-value" style="margin-top: -25px;">{{ctrl.elementSelected.details.metrics.security*100}}</div>
+                                                <div class="metric-label">Security</div>
+                                            </div>
+
+                                            <div class="metric-item">
+                                                <div class="metric-arrow rotate90" style="background: url('img/element/arrow-yellow.png');"></div>
+                                                <div class="metric-value" style="margin-top: -25px;">{{ctrl.elementSelected.details.metrics.workmanship*100}}</div>
+                                                <div class="metric-label">Workmanship</div>
+                                            </div>
+                                        </detailbox>
+                                        <detailbox ng-click="ctrl.openDetailsModalForSelectedElement('build');">
+                                            <boxtitle>Build</boxtitle>
+                                            <div>
+                                                <div class="computer">
+                                                    <img src="img/element/computer.png" style="width: 70px;" /><br />
+                                                    Debug
+                                                </div>
+                                                <div class="computer">
+                                                    <img src="img/element/computer.png" style="width: 70px;" /><br />
+                                                    Release
+                                                </div>
+                                            </div>
+                                            <div class="footer">
+                                                {{ctrl.elementSelected.details.build.time | date : 'M/d/yyyy h:mm a' | lowercase }}
+                                            </div>
+                                        </detailbox>
+                                        <detailbox ng-click="ctrl.openDetailsModalForSelectedElement('unitTest');">
+                                            <boxtitle>Unit Test</boxtitle>
+                                            <div>
+                                                <div class="detail-graph">
+                                                    <canvas id="pie" class="chart chart-pie"
+                                                            style="max-width: 130px; max-height: 130px; width: 130px; height: 130px; "
+                                                            chart-data="[ctrl.elementSelected.details.unitTest.passed, ctrl.elementSelected.details.unitTest.notPassed]"
+                                                            chart-labels="ctrl.chartLabels" chart-options="ctrl.chartOptions"></canvas>
+                                                </div>
+                                                <div class="detail-percent green">
+                                                    <span>{{(ctrl.elementSelected.details.unitTest.passed * 100) / (ctrl.elementSelected.details.unitTest.passed + ctrl.elementSelected.details.unitTest.notPassed)  | number:0 }}%</span>
+                                                    <span class="label">tests passed</span>
+                                                </div>
+                                            </div>
+                                            <div class="progress detail-progress">
+                                                <div class="progress-bar progress-bar-success" style="width: {{ctrl.elementSelected.details.unitTest.coverage * 100 | number:0 }}%">
+                                                    <span style="text-align: center;">{{ctrl.elementSelected.details.unitTest.coverage * 100 | number:0 }}%<br />code covered</span>
+                                                </div>
+                                                <div class="progress-bar progress-bar-warning" style="width: {{100 - (ctrl.elementSelected.details.unitTest.coverage * 100) | number:0 }}%"></div>
+                                            </div>
+                                        </detailbox>
+                                        <detailbox ng-click="ctrl.openDetailsModalForSelectedElement('functionalTest');">
+                                            <boxtitle>Functional Test</boxtitle>
+                                            <div>
+                                                <div class="detail-graph">
+                                                    <canvas id="pie" class="chart chart-pie"
+                                                            style="max-width: 130px; max-height: 130px; width: 130px; height: 130px; "
+                                                            chart-data="[ctrl.elementSelected.details.functionalTest.passed, ctrl.elementSelected.details.functionalTest.notPassed]"
+                                                            chart-labels="ctrl.chartLabels" chart-options="ctrl.chartOptions"></canvas>
+                                                </div>
+                                                <div class="detail-percent yellow">
+                                                    <span>{{(ctrl.elementSelected.details.functionalTest.passed * 100) / (ctrl.elementSelected.details.functionalTest.passed + ctrl.elementSelected.details.functionalTest.notPassed)  | number:0 }}%</span>
+                                                    <span class="label">tests passed</span>
+                                                </div>
+                                            </div>
+                                            <div class="progress detail-progress">
+                                                <div class="progress-bar progress-bar-success" style="width: {{ctrl.elementSelected.details.functionalTest.coverage * 100 | number:0 }}%">
+                                                    <span style="text-align: center;">{{ctrl.elementSelected.details.functionalTest.coverage * 100 | number:0 }}%<br />code covered</span>
+                                                </div>
+                                                <div class="progress-bar progress-bar-warning" style="width: {{100 - (ctrl.elementSelected.details.functionalTest.coverage * 100) | number:0 }}%"></div>
+                                            </div>
+                                        </detailbox>
+                                        <div class="result-box"
+                                             ng-if="e.result">
+                                            <span class="result-label">Result:</span>
+                                            <span class="result">{{e.result}}</span>
+                                            <div class="result-action">
+                                                <div ng-if="e.state === 'Rejected' && e.type.name === 'Firewall'">
+                                                    <input type="button" class="btn btn-primary" value="Find issues" />
+                                                </div>
+                                                <div ng-if="e.state === 'Accepted' && e.type.name === 'Firewall'">
+                                                    <button class="btn btn-primary">
+                                                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Merge Build
+                                                    </button>
+                                                </div>
+                                                <div ng-if="e.state === 'Complete' && e.type.name === 'Build'">
+                                                    <input type="button" class="btn btn-primary" value="Find issues" />
+                                                    to
+                                                    <select class="form-control">
+                                                        <option ng-repeat="env in ctrl.getSortedEnvironments() track by env.id"
+                                                                value="env.id">
+                                                            {{env.name}}
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                                <div ng-if="e.state === 'Accepted' && e.type.name === 'Firewall'"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="readme.html">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Read me</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <cong-readme />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="modal.html">
+        <div class="modal-header alert-primary">
+            <h3 class="modal-title" id="modal-title">Element {{ctrl.element.id}}</h3>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <strong>{{ctrl.type}}:</strong>
+            <ul>
+                <li ng-repeat="(item, value) in ctrl.element.details[ctrl.type]">
+                    {{item}}: {{value}}
+                </li>
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ctrl.ok()">OK</button>
+        </div>
+    </script>
+
+    <script type="text/javascript">
+        (function () {
+            Chart.defaults.global.colors = ['#46BFBD', '#FDB45C'];
+            angular.module("cong")
+                .constant("ROUTES", {
+                    getAll: "json/elements.json",
+                    get: "json/generic-element.json",
+                    getTypes: "json/types.json",
+
+                    testingPage: "test.html",
+
+                    readmeFile: "README.txt",
+
+                    menuTemplate: "tpt/menu.html"
+                });
+        })();
+
+    </script>
+
+</body>
+</html>
