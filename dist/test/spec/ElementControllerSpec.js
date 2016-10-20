@@ -57,18 +57,16 @@ describe('ElementController', function () {
 
         var passPromise;
         var elementServiceMock;
+        var $controller;
 
-        beforeEach(module('cong.element', function ($provide) {
-            elementServiceMock = {
-                getAll: function () { return { then: function() { return "getAll"; } }; },
-                getTypes: function () { return { then: function () { return "getTypes"; } }; },
-                get: function () { return { then: function () { return "get"; } }; }
-            };
+        beforeEach(inject(function (_$controller_) {
+            $controller = _$controller_;
 
-            $provide.value('Element', elementServiceMock);
-        }));
-        
-        beforeEach(inject(function ($controller) {
+            elementServiceMock = {};
+            elementServiceMock.getAll = function () { return { then: function() { return "getAll"; } }; };
+            elementServiceMock.getTypes = function () { return { then: function () { return "getTypes"; } }; };
+            elementServiceMock.get = function () { return { then: function () { return "get"; } }; };
+
             elementController = $controller('ElementController', {
                 Element: elementServiceMock
             });
@@ -80,6 +78,10 @@ describe('ElementController', function () {
             expect(elementController.status).toBeDefined();
             expect(elementController.elementSelected).toBeDefined();
         });
+
+        // it('Should controller has service methods available', function() {
+        //   expect(elementController.Element)
+        // });
 
         it('Should sort environments list', function () {
             elementController.types = {

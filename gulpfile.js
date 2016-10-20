@@ -105,12 +105,14 @@ gulp.task('copy', function () {
         gulp.src([
             'index.html',
             'README.txt',
-            'test.html',
             'test/**/*.*',
             'json/**/*.*'
         ], { base: '.' })
             .pipe(gulp.dest('dist')),
 
+        gulp.src('test.html')
+        	.pipe(gulp.dest('dist/test.html'));
+        	
         gulp.src('content/images/app/**/*.*')
             .pipe(gulp.dest('dist/img'))
     );

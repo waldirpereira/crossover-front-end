@@ -70,6 +70,11 @@
 
             ctrl.elementSelected = ctrl.elementsList.filter(function (e) { return e.id === id; })[0];
             ctrl.status.loadingElement = true;
+
+            Element.getAll().then(function (elementsList) {
+                ctrl.elementsList = elementsList;
+            });
+
             Element.get(id)
                 .then(function (details) {
                     ctrl.elementSelected = extend({
